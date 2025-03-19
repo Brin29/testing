@@ -28,8 +28,8 @@ public class UserServiceImpl {
 
     public User updateUser(Long id, User newUser){
         return repository.findById(id).map(user -> {
-            user.setFirst_name(newUser.getFirst_name());
-            user.setLast_name(newUser.getLast_name());
+            user.setFirstName(newUser.getFirstName());
+            user.setLastName(newUser.getLastName());
 
             return repository.save(user);
         }).orElseThrow(RuntimeException::new);

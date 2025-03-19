@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
@@ -22,8 +23,8 @@ public class UserRepositoryTests {
 
         // Arrange
         User user = User.builder()
-                .first_name("Breiner")
-                .last_name("Parra")
+                .firstName("Breiner")
+                .lastName("Parra")
                 .build();
 
         // Act
@@ -39,13 +40,13 @@ public class UserRepositoryTests {
     @Test
     public void UserRepository_GetAll_ReturnMoreThanOneUser(){
         User user = User.builder()
-                .first_name("Steven")
-                .last_name("Parra")
+                .firstName("Steven")
+                .lastName("Parra")
                 .build();
 
         User user2 = User.builder()
-                .first_name("Andres")
-                .last_name("Diaz")
+                .firstName("Andres")
+                .lastName("Diaz")
                 .build();
 
         userRepository.save(user);
@@ -60,8 +61,8 @@ public class UserRepositoryTests {
     @Test
     public void UserRepository_FindById_ReturnUser(){
         User user = User.builder()
-                .first_name("Steven")
-                .last_name("Parra")
+                .firstName("Steven")
+                .lastName("Parra")
                 .build();
 
 
@@ -70,5 +71,58 @@ public class UserRepositoryTests {
         User userList  = userRepository.findById(user.getId()).get();
 
         Assertions.assertThat(userList).isNotNull();
+    }
+
+    // Custom Query Method
+    @Test
+    public void UserRepository_FindByType_ReturnUserNotNull(){
+        User user = User.builder()
+                .firstName("Steven")
+                .lastName("Parra")
+                .build();
+
+
+        userRepository.save(user);
+
+        User userList  = userRepository.findByFirstName(user.getFirstName()).get();
+
+        Assertions.assertThat(userList).isNotNull();
+    }
+
+    @Test
+    public void UserRepository_UpdatePokemon_ReturnUserNotNull(){
+        User user = User.builder()
+                .firstName("Steven")
+                .lastName("Parra")
+                .build();
+
+        userRepository.save(user);
+
+        User userSave = userRepository.findById(user.getId()).get();
+        userSave.setFirstName("Brandon");
+        userSave.setLastName("Jhon");
+
+        User updateUser = userRepository.save(userSave);
+
+        Assertions.assertThat(updateUser.getFirstName()).isNotNull();
+        Assertions.assertThat(updateUser.getLastName()).isNotNull();
+    }
+
+    @Test
+    public void UserRepository_UserDelete_ReturnUserIsEmpty(){
+        // Arrange
+        User user = User.builder()
+                .firstName("Steven")
+                .lastName("Parra")
+                .build();
+
+        userRepository.save(user);
+
+        // Act
+        userRepository.deleteById(user.getId());
+        Optional<User> userReturn = userRepository.findById(user.getId());
+
+        // Assert
+        Assertions.assertThat(userReturn).isEmpty();
     }
 }
