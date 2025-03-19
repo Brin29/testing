@@ -8,6 +8,8 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
+
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class UserRepositoryTests {
@@ -32,5 +34,41 @@ public class UserRepositoryTests {
         // Assert
         Assertions.assertThat(saveUser).isNotNull();
         Assertions.assertThat(saveUser.getId()).isGreaterThan(0);
+    }
+
+    @Test
+    public void UserRepository_GetAll_ReturnMoreThanOneUser(){
+        User user = User.builder()
+                .first_name("Steven")
+                .last_name("Parra")
+                .build();
+
+        User user2 = User.builder()
+                .first_name("Andres")
+                .last_name("Diaz")
+                .build();
+
+        userRepository.save(user);
+        userRepository.save(user2);
+
+        List<User> userList = userRepository.findAll();
+
+        Assertions.assertThat(userList).isNotNull();
+        Assertions.assertThat(userList.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void UserRepository_FindById_ReturnUser(){
+        User user = User.builder()
+                .first_name("Steven")
+                .last_name("Parra")
+                .build();
+
+
+        userRepository.save(user) ;
+
+        User userList  = userRepository.findById(user.getId()).get();
+
+        Assertions.assertThat(userList).isNotNull();
     }
 }
